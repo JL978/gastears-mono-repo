@@ -8,7 +8,7 @@
       "packages/*"
     ],
     "nohoist": [
-      "**/gas-claim-contract/**"
+      "**/gastears-hsc-frontend/**"
     ]
   },
   "private": true,
