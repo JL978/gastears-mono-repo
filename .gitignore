@@ -11,7 +11,7 @@ yarn-error.log
 /coverage
 
 # next.js
-*/.next
+*.next
 /out/
 
 # production
