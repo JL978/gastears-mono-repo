@@ -1,19 +1,34 @@
-import { expect } from "chai";
+import { expect, assert } from "chai";
 import { ethers } from "hardhat";
+import { GasClaim } from "../typechain";
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+describe("Gas Claim Contract", function () {
+  let GasClaimContract, gasClaim: GasClaim;
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+  before(async function () {
+    GasClaimContract = await ethers.getContractFactory("GasClaim");
+    gasClaim = await GasClaimContract.deploy();
+    await gasClaim.deployed();
+  })
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+  it("Should initialize to have 0 funds and fund the correct amount", async function () {
+    await gasClaim.fund(10);
+    const availableFunds = await gasClaim.availableFunds()
+    expect(availableFunds).to.equal(10);
   });
+
+  it("Should not allow to withdraw more than the contract has", async function () {
+    try {
+      await gasClaim.withdraw(11);
+      assert.fail("The transaction should have thrown an error");
+    }
+    catch (err) {
+    }
+  })
+
+  it("Should withdraw the correct amount", async function () {
+    await gasClaim.withdraw(10);
+    const availableFunds = await gasClaim.availableFunds()
+    expect(availableFunds).to.equal(0)
+  })
 });

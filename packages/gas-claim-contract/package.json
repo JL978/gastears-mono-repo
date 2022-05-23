@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "start-local-node": "npx hardhat node",
-    "deploy-local": "npx hardhat --network localhost run scripts/deploy.ts"
+    "deploy-local": "npx hardhat --network localhost run scripts/deploy.ts",
+    "build": "npx hardhat compile"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
