@@ -1,27 +1,27 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
+import "./Ownable.sol";
 
-import "hardhat/console.sol";
-
-contract GasClaim {
+contract GasClaim is Ownable {
     uint256 public availableFunds = 0;
+    uint256 public externalFunds = 0;
 
-    // constructor() {
-    //     greeting = _greeting;
-    // }
-
-    function fund(uint256 _amount) public returns (uint256) {
-        availableFunds += _amount;
-        return availableFunds;
+    receive() external payable {
+        externalFunds += msg.value;
     }
 
-    function withdraw(uint256 _amount) public returns (uint256) {
-        int256 leftover = int256(availableFunds) - int256(_amount);
-        require(
-            leftover >= 0,
-            "Trying to withdraw more tokens than the contract has"
-        );
-        availableFunds -= _amount;
-        return availableFunds;
+    function fund() public payable onlyOwner {
+        availableFunds += msg.value;
+    }
+
+    function withdrawFunds() public payable onlyOwner {
+        availableFunds = 0;
+        payable(msg.sender).transfer(availableFunds);
+    }
+
+    function withdrawAll() public payable onlyOwner {
+        availableFunds = 0;
+        externalFunds = 0;
+        payable(msg.sender).transfer(address(this).balance);
     }
 }
