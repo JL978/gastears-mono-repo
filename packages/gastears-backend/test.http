@@ -1,0 +1,20 @@
+POST http://localhost:5000/explorer
+content-type: application/json
+
+{
+    "addresses": [
+        "0xE00669A884B8eB60bc6C1222A931407C46596085",
+        "0x0480A1F4c7a2Bfc5d2eF018F857E0c2c9827d5e6"
+    ]
+}
+
+###
+POST https://gas-tears.herokuapp.com/explorer
+content-type: application/json
+
+{
+    "addresses": [
+        "0xE00669A884B8eB60bc6C1222A931407C46596085",
+        "0x0480A1F4c7a2Bfc5d2eF018F857E0c2c9827d5e6"
+    ]
+}
