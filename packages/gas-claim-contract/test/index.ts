@@ -60,4 +60,27 @@ describe("Gas Claim Contract", function () {
     fundedAmountEqual(0)
     externalAmountEqual(0)
   })
+
+  it("Add wallets to the contract", async function () {
+    await gasClaim.addWallet(signer0.address);
+    const walletTime = await gasClaim.wallets(signer0.address);
+    const walletTimeNum = walletTime.toNumber()
+    const latestBlock = await provider.getBlock("latest");
+    expect(walletTimeNum).to.equal(latestBlock.timestamp)
+  })
+
+  it("Does not add a wallet that is already in the contract", async function () {
+    await expect(gasClaim.addWallet(signer0.address)).to.be.revertedWith("Address already added");
+  })
+
+  it("Remove wallets from the contract", async function () {
+    await gasClaim.removeWallet(signer0.address);
+    const walletTime = await gasClaim.wallets(signer0.address);
+    const walletTimeNum = walletTime.toNumber()
+    expect(walletTimeNum).to.equal(0)
+  })
+
+  it("Does not remove a wallet that is not already in the contract", async function () {
+    await expect(gasClaim.removeWallet(signer0.address)).to.be.revertedWith("Address not available");
+  })
 });
