@@ -5,7 +5,13 @@ import "./Ownable.sol";
 contract GasClaim is Ownable {
     uint256 public availableFunds = 0;
     uint256 public externalFunds = 0;
+    uint256 public timeBetweenClaim;
+
     mapping(address => uint256) public wallets;
+
+    constructor(uint256 _timeBetweenClaim) {
+        timeBetweenClaim = _timeBetweenClaim;
+    }
 
     receive() external payable {
         externalFunds += msg.value;
@@ -34,5 +40,20 @@ contract GasClaim is Ownable {
     function removeWallet(address _address) public onlyOwner {
         require(wallets[_address] > 0, "Address not available");
         delete wallets[_address];
+    }
+
+    function claim(address _address, uint256 _amount) public payable onlyOwner {
+        require(wallets[_address] > 0, "Address not available");
+        require(availableFunds >= _amount, "Insufficient funds in contract");
+        require(
+            block.timestamp - wallets[_address] >= timeBetweenClaim,
+            "Trying to claim this address too soon"
+        );
+        wallets[_address] = block.timestamp;
+        payable(_address).transfer(_amount);
+    }
+
+    function setTimeBetweenClaim(uint256 _timeBetweenClaim) public onlyOwner {
+        timeBetweenClaim = _timeBetweenClaim;
     }
 }

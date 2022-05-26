@@ -4,6 +4,9 @@ import { MockProvider } from "ethereum-waffle";
 import { ethers, waffle } from "hardhat";
 import { GasClaim } from "../typechain";
 
+const TEST_CLAIM_TIME = 5 * 1000; // 5s converted to ms
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 describe("Gas Claim Contract", function () {
   let provider: MockProvider, GasClaimContract, gasClaim: GasClaim;
   let ownerSigner: SignerWithAddress, signer0: SignerWithAddress;
@@ -14,7 +17,7 @@ describe("Gas Claim Contract", function () {
     [ownerSigner, signer0] = await ethers.getSigners()
 
     GasClaimContract = await ethers.getContractFactory("GasClaim");
-    gasClaim = await GasClaimContract.deploy();
+    gasClaim = await GasClaimContract.deploy(TEST_CLAIM_TIME);
     await gasClaim.deployed();
 
     fundedAmountEqual = async () => {
@@ -82,5 +85,30 @@ describe("Gas Claim Contract", function () {
 
   it("Does not remove a wallet that is not already in the contract", async function () {
     await expect(gasClaim.removeWallet(signer0.address)).to.be.revertedWith("Address not available");
+  })
+
+  it("Does not allow claim if wallet not set", async function () {
+    await expect(gasClaim.claim(signer0.address, 10)).to.be.revertedWith("Address not available");
+  })
+
+  it("Does not allow claim if there is insufficient funds in contract", async function () {
+    await gasClaim.addWallet(signer0.address);
+    await expect(gasClaim.removeWallet(signer0.address)).to.be.revertedWith("Insufficient funds in contract");
+    await gasClaim.claim(signer0.address, 10);
+  })
+
+  it("Does not allow claiming too soon", async function () {
+    await gasClaim.addWallet(signer0.address);
+    await gasClaim.fund({ value: 10 });
+    await expect(gasClaim.claim(signer0.address, 10)).to.be.revertedWith("Trying to claim this address too soon");
+  })
+
+  it("Allows claim after the set wait amount and send the correct amount", async function () {
+    const beforeClaimBalance = await provider.getBalance(signer0.address)
+    this.timeout(TEST_CLAIM_TIME + 1000)
+    await wait(TEST_CLAIM_TIME)
+    await gasClaim.claim(signer0.address, 10)
+    const afterClaimBalance = await provider.getBalance(signer0.address)
+    expect(afterClaimBalance.toNumber()).to.equal(beforeClaimBalance.toNumber() + 10)
   })
 });
