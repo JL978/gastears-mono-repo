@@ -5,7 +5,6 @@ import { ethers, waffle } from "hardhat";
 import { GasClaim } from "../typechain";
 
 const TEST_CLAIM_TIME = 2 * 1000; // 5s converted to ms
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe("Gas Claim Contract", function () {
   let provider: MockProvider, GasClaimContract, gasClaim: GasClaim;
@@ -106,12 +105,12 @@ describe("Gas Claim Contract", function () {
   it("Allows claim after the set wait amount and send the correct amount", async function () {
     const beforeClaimBalance = await provider.getBalance(signer0.address)
     const beforeAvailableFunds = await gasClaim.availableFunds()
-    this.timeout(TEST_CLAIM_TIME + 3000)
-    await wait(TEST_CLAIM_TIME + 2000)
+    await provider.send("evm_increaseTime", [TEST_CLAIM_TIME])
     await gasClaim.claim(signer0.address, 10)
     const afterClaimBalance = await provider.getBalance(signer0.address)
     const afterAvailableFunds = await gasClaim.availableFunds()
-    expect(afterClaimBalance.toNumber()).to.equal(beforeClaimBalance.toNumber() + 10)
-    expect(afterAvailableFunds.toNumber()).to.equal(beforeAvailableFunds.toNumber() - 10)
+    // console.log(beforeClaimBalance, beforeAvailableFunds, afterClaimBalance, afterAvailableFunds)
+    expect(afterClaimBalance.sub(beforeClaimBalance).toNumber()).to.equal(10)
+    expect(beforeAvailableFunds.sub(afterAvailableFunds).toNumber()).to.equal(10)
   })
 });
