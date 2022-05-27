@@ -4,7 +4,7 @@ import { MockProvider } from "ethereum-waffle";
 import { ethers, waffle } from "hardhat";
 import { GasClaim } from "../typechain";
 
-const TEST_CLAIM_TIME = 5 * 1000; // 5s converted to ms
+const TEST_CLAIM_TIME = 2 * 1000; // 5s converted to ms
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe("Gas Claim Contract", function () {
@@ -92,23 +92,26 @@ describe("Gas Claim Contract", function () {
   })
 
   it("Does not allow claim if there is insufficient funds in contract", async function () {
+    await gasClaim.fund({ value: 10 });
     await gasClaim.addWallet(signer0.address);
-    await expect(gasClaim.removeWallet(signer0.address)).to.be.revertedWith("Insufficient funds in contract");
-    await gasClaim.claim(signer0.address, 10);
+    await expect(gasClaim.claim(signer0.address, 11)).to.be.revertedWith("Not enough funds");
+    await gasClaim.removeWallet(signer0.address)
   })
 
   it("Does not allow claiming too soon", async function () {
     await gasClaim.addWallet(signer0.address);
-    await gasClaim.fund({ value: 10 });
-    await expect(gasClaim.claim(signer0.address, 10)).to.be.revertedWith("Trying to claim this address too soon");
+    await expect(gasClaim.claim(signer0.address, 10)).to.be.revertedWith("Claim too soon");
   })
 
   it("Allows claim after the set wait amount and send the correct amount", async function () {
     const beforeClaimBalance = await provider.getBalance(signer0.address)
-    this.timeout(TEST_CLAIM_TIME + 1000)
-    await wait(TEST_CLAIM_TIME)
+    const beforeAvailableFunds = await gasClaim.availableFunds()
+    this.timeout(TEST_CLAIM_TIME + 3000)
+    await wait(TEST_CLAIM_TIME + 2000)
     await gasClaim.claim(signer0.address, 10)
     const afterClaimBalance = await provider.getBalance(signer0.address)
+    const afterAvailableFunds = await gasClaim.availableFunds()
     expect(afterClaimBalance.toNumber()).to.equal(beforeClaimBalance.toNumber() + 10)
+    expect(afterAvailableFunds.toNumber()).to.equal(beforeAvailableFunds.toNumber() - 10)
   })
 });

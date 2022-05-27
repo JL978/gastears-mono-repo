@@ -42,13 +42,15 @@ contract GasClaim is Ownable {
         delete wallets[_address];
     }
 
-    function claim(address _address, uint256 _amount) public payable onlyOwner {
+    function claim(address _address, uint256 _amount) public onlyOwner {
         require(wallets[_address] > 0, "Address not available");
-        require(availableFunds >= _amount, "Insufficient funds in contract");
+        bool sufficientFunds = availableFunds >= _amount;
+        require(sufficientFunds, "Not enough funds");
         require(
             block.timestamp - wallets[_address] >= timeBetweenClaim,
-            "Trying to claim this address too soon"
+            "Claim too soon"
         );
+        availableFunds -= _amount;
         wallets[_address] = block.timestamp;
         payable(_address).transfer(_amount);
     }
