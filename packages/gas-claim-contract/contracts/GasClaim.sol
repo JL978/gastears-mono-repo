@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 import "./Ownable.sol";
 
 contract GasClaim is Ownable {
+    event Claimed(address _address, uint256 _newTime);
+
     uint256 public availableFunds = 0;
     uint256 public externalFunds = 0;
     uint256 public timeBetweenClaim;
@@ -53,6 +55,7 @@ contract GasClaim is Ownable {
         availableFunds -= _amount;
         wallets[_address] = block.timestamp;
         payable(_address).transfer(_amount);
+        emit Claimed(_address, block.timestamp);
     }
 
     function setTimeBetweenClaim(uint256 _timeBetweenClaim) public onlyOwner {

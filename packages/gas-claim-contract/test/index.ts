@@ -105,11 +105,19 @@ describe("Gas Claim Contract", function () {
   it("Allows claim after the set wait amount and send the correct amount", async function () {
     const beforeClaimBalance = await provider.getBalance(signer0.address)
     const beforeAvailableFunds = await gasClaim.availableFunds()
+
+    const beforeBlockNumber = await provider.getBlockNumber()
+    const beforeBlock = await provider.getBlock(beforeBlockNumber)
+    const beforeBlockTimeStamp = beforeBlock.timestamp
+    const afterBlockTimeStamp = beforeBlockTimeStamp + TEST_CLAIM_TIME
+
     await provider.send("evm_increaseTime", [TEST_CLAIM_TIME])
-    await gasClaim.claim(signer0.address, 10)
+    await expect(gasClaim.claim(signer0.address, 10))
+      .to.emit(gasClaim, "Claimed")
+      .withArgs(signer0.address, afterBlockTimeStamp)
+
     const afterClaimBalance = await provider.getBalance(signer0.address)
     const afterAvailableFunds = await gasClaim.availableFunds()
-    // console.log(beforeClaimBalance, beforeAvailableFunds, afterClaimBalance, afterAvailableFunds)
     expect(afterClaimBalance.sub(beforeClaimBalance).toNumber()).to.equal(10)
     expect(beforeAvailableFunds.sub(afterAvailableFunds).toNumber()).to.equal(10)
   })
