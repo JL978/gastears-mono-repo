@@ -1,12 +1,11 @@
-
 :root {
-  --tile-shadow : 0.5px 0.5px 1.6px rgba(0, 0, 0, 0.046),
-                  1px 0.9px 3.8px rgba(0, 0, 0, 0.066),
-                  1.6px 1.5px 6.8px rgba(0, 0, 0, 0.079),
-                  2.8px 2.7px 11.2px rgba(0, 0, 0, 0.089),
-                  6.1px 5.7px 18.5px rgba(0, 0, 0, 0.097),
-                  17.5px 16.6px 32.4px rgba(0, 0, 0, 0.104),
-                  88px 83px 70px rgba(0, 0, 0, 0.11);
+  --tile-shadow: 0.5px 0.5px 1.6px rgba(0, 0, 0, 0.046),
+    1px 0.9px 3.8px rgba(0, 0, 0, 0.066),
+    1.6px 1.5px 6.8px rgba(0, 0, 0, 0.079),
+    2.8px 2.7px 11.2px rgba(0, 0, 0, 0.089),
+    6.1px 5.7px 18.5px rgba(0, 0, 0, 0.097),
+    17.5px 16.6px 32.4px rgba(0, 0, 0, 0.104),
+    88px 83px 70px rgba(0, 0, 0, 0.11);
 }
 
 html,
@@ -43,7 +42,9 @@ button:hover {
   cursor: pointer;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin: 0;
 }
 
@@ -55,9 +56,11 @@ input {
   border: none;
 }
 
-input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+input::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: rgb(192, 192, 192);
-  opacity: 0.8; /* Firefox */
+  opacity: 0.8;
+  /* Firefox */
 }
 
 input:disabled {
@@ -67,34 +70,29 @@ input:disabled {
 
 @keyframes glowing {
   0% {
-    filter:drop-shadow(0 0 2px rgb(203, 245, 229))
-          drop-shadow(0 0 10px rgb(99, 212, 171))
-          drop-shadow(0 0 45px rgba(66,221,164,1));
+    filter: drop-shadow(0 0 2px rgb(203, 245, 229)) drop-shadow(0 0 10px rgb(99, 212, 171)) drop-shadow(0 0 45px rgba(66, 221, 164, 1));
   }
+
   100% {
-    filter:drop-shadow(0 0 5px rgb(212, 245, 232))
-          drop-shadow(0 0 20px rgb(114, 214, 177))
-          drop-shadow(0 0 60px rgb(69, 214, 161));
+    filter: drop-shadow(0 0 5px rgb(212, 245, 232)) drop-shadow(0 0 20px rgb(114, 214, 177)) drop-shadow(0 0 60px rgb(69, 214, 161));
   }
 }
 
 .logoSvg {
   color: #d4f8ed;
   will-change: auto;
-  filter:drop-shadow(0 0 2px rgb(203, 245, 229))
-          drop-shadow(0 0 10px rgb(99, 212, 171))
-          drop-shadow(0 0 45px rgba(66,221,164,1));
+  filter: drop-shadow(0 0 2px rgb(203, 245, 229)) drop-shadow(0 0 10px rgb(99, 212, 171)) drop-shadow(0 0 45px rgba(66, 221, 164, 1));
   width: 7rem;
   height: 7rem;
 }
 
 @media only screen and (min-width: 600px) {
   .logoSvg {
-    animation: glowing linear 2s infinite alternate; 
+    animation: glowing linear 2s infinite alternate;
   }
 }
 
-@media screen and (prefers-reduced-motion: reduce) { 
+@media screen and (prefers-reduced-motion: reduce) {
   .logoSvg {
     animation: unset;
   }
@@ -105,7 +103,7 @@ input:disabled {
 }
 
 .primaryTextGradient {
-  background: linear-gradient(45deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 150%);
+  background: linear-gradient(45deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 150%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -129,7 +127,7 @@ input:disabled {
   transition: opacity 200 ease;
 }
 
-.btn:disabled{
+.btn:disabled {
   cursor: not-allowed;
   opacity: 0.4;
 }
@@ -137,7 +135,7 @@ input:disabled {
 .btnPrimary {
   background: #42dda4;
   /* background: rgb(66,221,164); */
-  background: linear-gradient(45deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 150%);
+  background: linear-gradient(45deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 150%);
   color: #f5fffc;
   font-weight: bold;
 }
@@ -147,14 +145,14 @@ input:disabled {
   color: white;
   font-weight: bold;
   border: double 1px transparent;
-  background-image: linear-gradient(#202221, #202221), 
-                    linear-gradient(45deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 150%);
+  background-image: linear-gradient(#202221, #202221),
+    linear-gradient(45deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 150%);
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }
 
-.btnSecondary:hover{
-  background-image: linear-gradient(45deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 150%);
+.btnSecondary:hover {
+  background-image: linear-gradient(45deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 150%);
   background-clip: unset;
 }
 
@@ -173,14 +171,14 @@ input:disabled {
   font-weight: bold;
   border: double 1px transparent;
   border-radius: 30px;
-  background-image: linear-gradient(#202221, #202221), 
-                    linear-gradient(45deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 150%);
+  background-image: linear-gradient(#202221, #202221),
+    linear-gradient(45deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 150%);
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }
 
-.btnAutoTip:hover{
-  background-image: linear-gradient(45deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 150%);
+.btnAutoTip:hover {
+  background-image: linear-gradient(45deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 150%);
   background-clip: unset;
 }
 
@@ -217,12 +215,13 @@ input:disabled {
 
 .logo h1 {
   font-size: 2rem;
-  background: linear-gradient(71deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 200%);
+  background: linear-gradient(71deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 200%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   user-select: none;
 }
+
 .addressInputFieldRow {
   margin-bottom: 1rem;
   white-space: nowrap;
@@ -237,7 +236,7 @@ input:disabled {
   margin-bottom: 0;
 }
 
-.addressInputFieldLabel{
+.addressInputFieldLabel {
   font-size: 0.75rem;
   margin-left: 1.2rem;
   color: #93b9ab;
@@ -280,7 +279,7 @@ input:disabled {
   outline: 2px solid white;
 }
 
-.addressTextInput:disabled {  
+.addressTextInput:disabled {
   outline: 1px solid #93b9ab;
   color: #93b9ab;
 }
@@ -291,7 +290,7 @@ input:disabled {
 
 @media only screen and (min-width: 500px) {
   .addressInputFieldWrapper {
-      margin-left: 2rem;
+    margin-left: 2rem;
   }
 
   .buttonGroup {
@@ -324,7 +323,7 @@ input:disabled {
 .addressAddButton {
   align-self: center;
   margin-top: 0.75rem;
-  
+
 }
 
 .tipJarCTA {
@@ -334,7 +333,7 @@ input:disabled {
   font-size: 0.9rem;
 }
 
-.tipJarCTA > .material-icons {
+.tipJarCTA>.material-icons {
   font-size: 0.9rem;
 }
 
@@ -371,7 +370,7 @@ input:disabled {
   margin-left: 0.25rem;
 }
 
-.tipSwap:hover{
+.tipSwap:hover {
   cursor: pointer;
   opacity: 1;
 }
@@ -389,17 +388,17 @@ input:disabled {
 }
 
 .pageContainer.isFirstPage {
-  background: radial-gradient(circle at top, rgb(46, 58, 54) 0%, rgba(27,27,27,1) 90%);
+  background: radial-gradient(circle at top, rgb(46, 58, 54) 0%, rgba(27, 27, 27, 1) 90%);
 }
 
 /* search page */
-.searchPageTopBar{
+.searchPageTopBar {
   display: flex;
   justify-content: space-between;
   flex: 1;
 }
 
-.searchPageLogoArea{
+.searchPageLogoArea {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -408,15 +407,17 @@ input:disabled {
   margin-top: 1rem;
 }
 
-.searchPageMainArea{
+.searchPageMainArea {
   flex: 2;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   width: 100%;
+  gap: 1rem;
 }
 
-.dashboardTopBar{
+.dashboardTopBar {
   display: flex;
   flex: 1;
   justify-content: space-between;
@@ -496,7 +497,7 @@ input:disabled {
 
 .chainFilterTile.isSelected {
   background: #42dda4;
-  background: linear-gradient(45deg, rgba(66,221,164,1) 0%, rgba(12,109,196,1) 150%);
+  background: linear-gradient(45deg, rgba(66, 221, 164, 1) 0%, rgba(12, 109, 196, 1) 150%);
 }
 
 .tilePrimary {
@@ -510,7 +511,7 @@ input:disabled {
 }
 
 .walletOverviewName {
-  font-size:  0.9rem;
+  font-size: 0.9rem;
   font-style: italic;
   font-weight: 300;
   margin-bottom: 0.25rem;
@@ -541,7 +542,7 @@ input:disabled {
   transition: opacity 200ms ease, transform 200ms ease;
 }
 
-.walletOverviewChainIconWrapper > .all {
+.walletOverviewChainIconWrapper>.all {
   display: flex;
   color: white;
   border: solid 1px white;
@@ -555,7 +556,7 @@ input:disabled {
 }
 
 
-.walletOverviewChainIconWrapper:hover{
+.walletOverviewChainIconWrapper:hover {
   opacity: 0.9;
   transform: scale(1.2)
 }
@@ -586,7 +587,7 @@ input:disabled {
   font-weight: bold;
 }
 
-.recaptchaTOS{
+.recaptchaTOS {
   font-size: 0.6rem;
   margin-bottom: 1rem;
   padding: 0 0.5rem;
@@ -595,17 +596,15 @@ input:disabled {
   justify-self: center;
 }
 
-.recaptchaTOS a{
-  color:rgb(69, 214, 161)
+.recaptchaTOS a {
+  color: rgb(69, 214, 161)
 }
 
 .comingSoonLogoText {
-  font-size: 2.25rem; 
+  font-size: 2.25rem;
   margin-bottom: 4rem;
   color: #d4f8ed;
-  filter:drop-shadow(0 0 2px rgb(203, 245, 229))
-          drop-shadow(0 0 10px rgb(99, 212, 171))
-          drop-shadow(0 0 45px rgba(66,221,164,1));
+  filter: drop-shadow(0 0 2px rgb(203, 245, 229)) drop-shadow(0 0 10px rgb(99, 212, 171)) drop-shadow(0 0 45px rgba(66, 221, 164, 1));
 }
 
 .comingSoonPageWrapper {
@@ -646,7 +645,7 @@ input:disabled {
   align-items: center;
 }
 
-.comingSoonInput > .btn {
+.comingSoonInput>.btn {
   margin-top: 1.5rem;
 }
 
@@ -658,7 +657,7 @@ input:disabled {
     align-items: flex-start;
   }
 
-  .comingSoonInput > .btn {
+  .comingSoonInput>.btn {
     margin-top: 0;
   }
 }
@@ -674,32 +673,32 @@ input:disabled {
   flex-direction: column;
 }
 
-.socialLinkWrapper > a {
+.socialLinkWrapper>a {
   opacity: 0.4;
   transition: opacity 0.2s ease;
 }
 
-.socialLinkWrapper > a:hover {
+.socialLinkWrapper>a:hover {
   opacity: 1;
 }
 
 .footerContent {
-  flex: 1; 
+  flex: 1;
   position: relative;
   margin-bottom: 1.25rem;
 }
 
 .tipAndCaptchaContainer {
-  display: flex; 
-  flex-direction: column; 
-  align-content: center; 
+  display: flex;
+  flex-direction: column;
+  align-content: center;
 }
 
 @media only screen and (min-width: 770px) {
   .socialLinksContainer {
-    position: absolute; 
-    bottom: 0; 
-    right: 0 
+    position: absolute;
+    bottom: 0;
+    right: 0
   }
 
   .footerContent .recaptchaTOS,
