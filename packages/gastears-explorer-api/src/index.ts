@@ -8,10 +8,6 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-
-const FRONT_END_URL = process.env.FRONT_END_LOCAL_URL || process.env.FRONT_END_URL
-const FRONT_END_URL_REXP = process.env.FRONT_END_LOCAL_URL_REXP || process.env.FRONT_END_URL_REXP
-
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", req.headers.origin);
   res.header(
@@ -21,16 +17,16 @@ app.use(function (req, res, next) {
   next();
 });
 
-var corsOptions = {
-  origin: [FRONT_END_URL, FRONT_END_URL_REXP],
+const FRONT_END_URL = process.env.FRONT_END_LOCAL_URL || process.env.FRONT_END_URL
+const corsOptions = {
+  origin: [FRONT_END_URL],
   credentials: true,
 };
 app.use(cors(corsOptions))
 
-
 app.post('/explorer', async (req, res) => {
-  const { addresses } = req.body
-  const result = await getExplorerResponse(addresses)
+  const { addresses, chains } = req.body
+  const result = await getExplorerResponse(addresses, chains)
   res.status(200).json(result)
 })
 

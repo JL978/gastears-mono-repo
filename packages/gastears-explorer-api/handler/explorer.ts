@@ -1,15 +1,8 @@
 import axios from "axios"
-import { Chains, ExplorerResponse, Transaction, WalletAddress } from "../types"
+import { allSupportedChains } from "../global"
+import { Chains, ChainsConfigObject, ExplorerResponse, Transaction, WalletAddress } from "../types"
 
-type ChainToApiKey = {
-  [Chain in Chains]?: string
-}
-
-type ChainToApiEndpointUrl = {
-  [Chain in Chains]?: string
-}
-
-const CHAIN_TO_API_KEY_MAP: ChainToApiKey = {
+const CHAIN_TO_API_KEY_MAP: ChainsConfigObject = {
   "avalanche-2": process.env.SNOWTRACE_API_KEY,
   "binancecoin": process.env.BSCSCAN_API_KEY,
   "ethereum": process.env.ETHERSCAN_API_KEY,
@@ -18,7 +11,7 @@ const CHAIN_TO_API_KEY_MAP: ChainToApiKey = {
   "hoo-token": process.env.HOOSCAN_API_KEY
 }
 
-const CHAIN_TO_API_ENDPOINT_URL: ChainToApiEndpointUrl = {
+const CHAIN_TO_API_ENDPOINT_URL: ChainsConfigObject = {
   "avalanche-2": "https://api.snowtrace.io/api",
   "binancecoin": "https://api.bscscan.com/api",
   "ethereum": "https://api.etherscan.io/api",
@@ -28,9 +21,9 @@ const CHAIN_TO_API_ENDPOINT_URL: ChainToApiEndpointUrl = {
 }
 
 export default async function getExplorerResponse(
-  addresses: WalletAddress[]
+  addresses: WalletAddress[],
+  chains?: Chains[]
 ) {
-  const chains: Chains[] = ["avalanche-2", "binancecoin", "ethereum", "fantom", "matic-network", "hoo-token"];
   const result: ExplorerResponse = {
     "avalanche-2": {},
     "binancecoin": {},
@@ -40,44 +33,52 @@ export default async function getExplorerResponse(
     "hoo-token": {}
   }
 
-  await Promise.all(chains.map(async (chain: Chains) => {
-    const allTransactions = await Promise.all(addresses.map((address: string) => getAllTransactions(address, chain)))
-    addresses.forEach((address: string, index: number) => {
-      result[chain][address] = allTransactions[index]
+  const chainsToFetch = chains || allSupportedChains
+  const promises = chainsToFetch
+    .map(async (chain) => {
+      const addressTransactionsPromises = addresses.map((address) => getWalletTransactionsOnChain(address, chain))
+      const allTransactions = await Promise.all(addressTransactionsPromises)
+      addresses.forEach((address, index) => {
+        result[chain][address] = allTransactions[index]
+      })
     })
-  }))
 
+  await Promise.all(promises)
   return result
 }
 
-const getAllTransactions = (address: string, chain: Chains) => {
+const getWalletTransactionsOnChain = (address: WalletAddress, chain: Chains) => {
+  const baseUrl = CHAIN_TO_API_ENDPOINT_URL[chain]
+  const chainApiKey = CHAIN_TO_API_KEY_MAP[chain]
+
   return new Promise<Transaction[]>(async (resolve, reject) => {
-    const url = CHAIN_TO_API_ENDPOINT_URL[chain]?.concat(`?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&sort=asc&apikey=${CHAIN_TO_API_KEY_MAP[chain]}`)
-
-    const res = await axios.get(url || "")
-    const data = res.data
-
-    // Return early if there was error with api query, don't want to reject because that will fail the Promise.all
-    if (data.status !== "1") resolve(data)
-
-    let resultTransactions = data.result
-    let rawTotalTransactions = resultTransactions
-
-    while (resultTransactions.length === 10000) { //10,000 is the max result the api will return
-      const prevLastBlock = resultTransactions[resultTransactions.length - 1].blockNumber
-      const url = CHAIN_TO_API_ENDPOINT_URL[chain]?.concat(`?module=account&action=txlist&address=${address}&startblock=${prevLastBlock}&endblock=99999999&page=1&sort=asc&apikey=${CHAIN_TO_API_KEY_MAP[chain]}`)
-
-      const res = await axios.get(url || "")
+    async function getData(params: string): Promise<Transaction[]> {
+      const url = baseUrl + params
+      const res = await axios.get(url)
       const data = res.data
 
-      // Return early if there was error with api query, don't want to reject because that will fail the Promise.all
+      // Return early if there was error with api query, 
+      // don't want to reject because that will fail the Promise.all
       if (data.status !== "1") resolve(data)
-      resultTransactions = data.result
+      return data.result
+    }
+
+    let resultTransactions = await getData(
+      `?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&sort=asc&apikey=${chainApiKey}`
+    )
+    let rawTotalTransactions = resultTransactions
+
+    //10,000 is the max result length the api will return
+    while (resultTransactions.length === 10000) {
+      const prevLastBlock = resultTransactions.at(-1).blockNumber
+      resultTransactions = await getData(
+        `?module=account&action=txlist&address=${address}&startblock=${prevLastBlock}&endblock=99999999&page=1&sort=asc&apikey=${chainApiKey}`
+      )
       rawTotalTransactions = rawTotalTransactions.concat(resultTransactions)
     }
 
     const totalTransactions = rawTotalTransactions
-      .map((transaction: Transaction) => {
+      .map((transaction) => {
         return {
           timeStamp: transaction.timeStamp,
           hash: transaction.hash,
