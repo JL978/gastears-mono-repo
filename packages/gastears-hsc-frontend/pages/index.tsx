@@ -2,31 +2,31 @@ import Button from 'components/Button/Button'
 import ContentContainer from 'components/layouts/ContentContainer'
 import PageContainer from 'components/layouts/PageContainer'
 import type { NextPage } from 'next'
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import GasTears from "../public/gastears.svg"
 import FooterContent from 'components/FooterContent'
 import useGasClaimContract from 'hooks/useGasClaimContract'
 import ConnectWalletButton from 'components/Button/ConnectWalletButton'
 import { initExplorerResponse } from 'utils/Common'
-import { ExplorerResponse } from 'types'
+import { ExplorerResponse, Transaction } from 'types'
 import useWalletConnectContext from 'hooks/useWalletConnectContext'
 
 const Home: NextPage = () => {
   const { connectedWallets } = useWalletConnectContext()
-  const [chainToAddressMap, setChainToAddressMap] = useState<ExplorerResponse>(() => initExplorerResponse())
   const [isLoading, setIsLoading] = useState(false)
+  const [hooTransactions, setHooTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
     if (connectedWallets.length === 0) return
     const getTransactions = async () => {
       setIsLoading(true)
-
+      const connectedWallet = connectedWallets[0].toLowerCase()
       const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_API_LOCAL_URL || process.env.NEXT_PUBLIC_EXPLORER_API_URL || ""
       // const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_API_URL || "" //uncomment to test with the prod api
-      const apiRes = await fetch(EXPLORER_URL, {
+      const apiJSON = await fetch(EXPLORER_URL, {
         method: "POST",
         body: JSON.stringify({
-          addresses: [connectedWallets[0]],
+          addresses: [connectedWallet],
           chains: ["hoo-token"]
         }),
         headers: {
@@ -34,13 +34,21 @@ const Home: NextPage = () => {
         },
         credentials: 'include',
       })
-      const apiJSON = await apiRes.json()
+      const apiResult: ExplorerResponse = await apiJSON.json()
       setIsLoading(false)
-      console.log(apiJSON)
-      setChainToAddressMap(apiJSON)
+      const transactions = apiResult["hoo-token"][connectedWallet]
+        .filter((transaction) => transaction.from === connectedWallet)
+      setHooTransactions(transactions)
     }
     getTransactions()
   }, [connectedWallets])
+
+  const totalGasUsed = hooTransactions
+    .reduce((total, transaction) => {
+      const transactionPrice = parseFloat(transaction.gasUsed) * parseFloat(transaction.gasPrice) * (0.000000001) ** 2
+      return total + transactionPrice
+    }, 0)
+
   // const contract = useGasClaimContract()
 
   // if (typeof window !== "undefined" && contract) {
@@ -64,6 +72,7 @@ const Home: NextPage = () => {
       </div>
       <div className="searchPageMainArea">
         <h1>GasTears X HSC</h1>
+        <h3>You can claim: {totalGasUsed.toFixed(14)} HOO</h3>
         {connectedWallets.length === 0 ?
           <ConnectWalletButton />
           :
