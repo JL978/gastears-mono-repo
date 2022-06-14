@@ -4,6 +4,7 @@
   "scripts": {
     "start-local-node": "npx hardhat node",
     "deploy-local": "npx hardhat --network localhost run scripts/deploy.ts",
+    "deploy-local-test": "npx hardhat --network localhost run scripts/deploy-test-contract.ts",
     "build": "npx hardhat compile",
     "test": "npx hardhat test"
   },
