@@ -27,7 +27,6 @@ const Home: NextPage = () => {
         method: "POST",
         body: JSON.stringify({
           addresses: [connectedWallet],
-          chains: ["hoo-token"]
         }),
         headers: {
           'Content-Type': 'application/json'

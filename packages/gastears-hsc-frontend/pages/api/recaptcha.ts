@@ -1,9 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { ExplorerResponse } from "types"
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ExplorerResponse>
+  res: NextApiResponse
 ) {
   const { token } = JSON.parse(req.body)
   const url = 'https://www.google.com/recaptcha/api/siteverify'

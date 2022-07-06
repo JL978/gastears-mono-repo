@@ -23,7 +23,8 @@
     "react-dom": "17.0.2",
     "react-loading-skeleton": "^3.0.2",
     "react-toastify": "^8.1.1",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "zod": "^3.17.3"
   },
   "devDependencies": {
     "@types/node": "16.11.11",

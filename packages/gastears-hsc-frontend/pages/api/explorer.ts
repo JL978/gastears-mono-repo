@@ -1,21 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Chains, ExplorerResponse, Transaction } from "types"
+import { GasClaimInterface } from 'gas-claim-contract'
+import { ethers } from "ethers"
 
-type ChainToApiKey = {
-  [Chain in Chains]?: string
-}
+type ChainToApiKey = Record<Chains, string>
 
-type ChainToApiEndpointUrl = {
-  [Chain in Chains]?: string
-}
+type ChainToApiEndpointUrl = Record<Chains, string>
 
 const CHAIN_TO_API_KEY_MAP: ChainToApiKey = {
-  "avalanche-2": process.env.SNOWTRACE_API_KEY,
-  "binancecoin": process.env.BSCSCAN_API_KEY,
-  "ethereum": process.env.ETHERSCAN_API_KEY,
-  "fantom": process.env.FTMSCAN_API_KEY,
-  "matic-network": process.env.POLYGONSCAN_API_KEY,
-  "hoo-token": process.env.HOOSCAN_API_KEY
+  "avalanche-2": process.env.SNOWTRACE_API_KEY!,
+  "binancecoin": process.env.BSCSCAN_API_KEY!,
+  "ethereum": process.env.ETHERSCAN_API_KEY!,
+  "fantom": process.env.FTMSCAN_API_KEY!,
+  "matic-network": process.env.POLYGONSCAN_API_KEY!,
+  "hoo-token": process.env.HOOSCAN_API_KEY!
 }
 
 const CHAIN_TO_API_ENDPOINT_URL: ChainToApiEndpointUrl = {
@@ -31,26 +29,24 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ExplorerResponse>
 ) {
-  const { addresses } = JSON.parse(req.body)
-  const chains: Chains[] = ["avalanche-2", "binancecoin", "ethereum", "fantom", "matic-network", "hoo-token"];
-  const result: ExplorerResponse = {
-    "avalanche-2": {},
-    "binancecoin": {},
-    "ethereum": {},
-    "fantom": {},
-    "matic-network": {},
-    "hoo-token": {}
-  }
+  // const signer = new ethers.Wallet(process.env.WALLET_PRIVATE_KEY!)
+  const signer = new ethers.Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")
+  const contract = new ethers.Contract(
+      process.env.NEXT_PUBLIC_GAS_CLAIM_CONTRACT_ADDRESS!,
+      GasClaimInterface.abi,
+      signer
+  )
 
-  await Promise.all(chains.map(async (chain: Chains) => {
-    const allTransactions = await Promise.all(addresses.map((address: string) => getAllTransactions(address, chain)))
-    addresses.forEach((address: string, index: number) => {
-      if (!(chain in result)) {
-        result[chain] = {}
-      }
-      result[chain][address] = allTransactions[index]
-    })
-  }))
+  const { addresses } = JSON.parse(req.body)
+
+  const allAddressTransactions = await Promise.all(addresses.map(async (address : string) => {
+    return getAllTransactions(address, "hoo-token")
+  })) 
+
+  const result  = allAddressTransactions.reduce((res, addressTransaction, index) => {
+    res[addresses[index]] = addressTransaction
+    return res
+  }, {})
 
   res.status(200).json(result)
 }
